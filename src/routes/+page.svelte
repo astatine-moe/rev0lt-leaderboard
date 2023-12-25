@@ -1,6 +1,14 @@
 <script>
     import { onMount } from "svelte";
     import { PUBLIC_API_URL } from "$env/static/public";
+    import { Toast } from "flowbite-svelte";
+    import {
+        PapperPlaneOutline,
+        ExclamationCircleOutline,
+    } from "flowbite-svelte-icons";
+    import { copy } from "svelte-copy";
+
+    let hidden = true;
 
     let loading = true;
     let err = null;
@@ -36,6 +44,18 @@
 </script>
 
 <div class="container">
+    <div class="mt-5 mb-5 text-center flex justify-center w-100">
+        <Toast
+            dismissable={false}
+            contentClass="flex space-x-4 rtl:space-x-reverse divide-x rtl:divide-x-reverse divide-gray-200 dark:divide-gray-700"
+        >
+            <ExclamationCircleOutline
+                class="w-5 h-5 text-primary-600 dark:text-primary-500"
+            />
+            <div class="ps-4 text-sm font-normal">Click @ to copy mention</div>
+        </Toast>
+    </div>
+
     <h1 class="text-lg mt-3 mb-3 text-center">Leaderboard</h1>
     <div class="leaderboard">
         {#if loading}
@@ -60,8 +80,15 @@
                         alt={`${user.username}'s pfp`}
                     />
                     <div class="details">
-                        <h3>${user.username}</h3>
-                        <span>${user.points} points</span>
+                        <h3>
+                            {user.displayName || user.username}
+                            <span
+                                class="mention"
+                                use:copy={`<@${user.identifier}>`}
+                                >@{user.username}</span
+                            >
+                        </h3>
+                        <span>{user.points} points</span>
                     </div>
                 </div>
             {/each}
@@ -109,6 +136,23 @@
             width: 100%;
             display: flex;
             justify-content: space-between;
+        }
+    }
+
+    .mention {
+        border-radius: 3px;
+        padding: 0 2px;
+
+        font-weight: 500;
+        unicode-bidi: plaintext;
+        color: rgb(201, 205, 251);
+        outline: rgb(201, 205, 251);
+        background: rgba(88, 101, 242, 0.3);
+
+        cursor: pointer;
+        &:hover {
+            background: rgb(88, 101, 242);
+            text-decoration: underline;
         }
     }
 </style>
