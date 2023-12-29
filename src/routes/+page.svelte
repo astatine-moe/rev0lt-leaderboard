@@ -5,6 +5,7 @@
     import {
         PapperPlaneOutline,
         ExclamationCircleOutline,
+        StarSolid,
     } from "flowbite-svelte-icons";
     import { copy } from "svelte-copy";
 
@@ -55,11 +56,9 @@
             <div class="ps-4 text-sm font-normal">Click @ to copy mention</div>
         </Toast>
     </div>
-
-    <h1 class="text-lg mt-3 mb-3 text-center">Leaderboard</h1>
     <div class="leaderboard">
         {#if loading}
-            {#each { length: 10 } as col}
+            {#each { length: 5 } as col}
                 <div class="user">
                     <div class="image bg-gray-700 animate-pulse" />
                     <div class="details">
@@ -72,8 +71,13 @@
             <h3 class="text-lg">Error:</h3>
             <p>{err}</p>
         {:else if users.length}
-            {#each users as user}
+            {#each users as user, i}
                 <div class="user">
+                    {#if i === 0}
+                        <StarSolid
+                            class="absolute left-[-10px] top-[-10px] rotate-45 text-yellow-400 w-7 h-7"
+                        />
+                    {/if}
                     <img
                         class="image"
                         src={user.avatar}
@@ -82,13 +86,19 @@
                     <div class="details">
                         <h3>
                             {user.displayName || user.username}
+                            <br />
                             <span
                                 class="mention"
                                 use:copy={`<@${user.identifier}>`}
                                 >@{user.username}</span
                             >
                         </h3>
-                        <span>{user.points} points</span>
+                        <span class="text-center"
+                            >{user.total_points} total<br /><span
+                                class="text-gray-400 text-xs"
+                                >({user.points} current)</span
+                            ></span
+                        >
                     </div>
                 </div>
             {/each}
@@ -105,21 +115,17 @@
 <style lang="scss">
     .leaderboard {
         padding: 1em 0 1em 0;
-        border-top: 1px solid rgba(255, 255, 255, 0.25);
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
         .user {
-            width: 100%;
             display: flex;
             align-items: center;
-            background: rgba(54, 54, 54, 0.3);
-            padding: 0.5em;
+            background: rgb(25, 25, 25);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 1em;
+            border-radius: 0.5em;
+            margin-bottom: 0.75em;
 
             position: relative;
-            &:nth-child(even) {
-                background: rgba(54, 54, 54, 0.5);
-            }
-            &:nth-child(1) {
-                background: rgba(255, 224, 46, 0.25) !important;
-            }
 
             &:hover {
                 background: rgba(54, 54, 54, 0.7);

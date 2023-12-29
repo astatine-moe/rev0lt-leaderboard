@@ -133,10 +133,13 @@
             display: flex;
             align-items: center;
             background: rgb(25, 25, 25);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             padding: 1em;
             border-radius: 0.5em;
             margin-bottom: 0.5em;
-
+            &:hover {
+                background: rgba(54, 54, 54, 0.7);
+            }
             > div {
                 margin-left: 1em;
                 h1 {
