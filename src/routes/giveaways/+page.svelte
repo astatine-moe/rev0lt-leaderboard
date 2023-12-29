@@ -61,6 +61,10 @@
     }
 </script>
 
+<svelte:head>
+    <title>Rev0lt - Giveaways</title>
+</svelte:head>
+
 <div class="container">
     <div class="giveaways">
         <Tabs contentClass="mt-2">

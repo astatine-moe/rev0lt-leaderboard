@@ -98,6 +98,10 @@
     </div>
 </div>
 
+<svelte:head>
+    <title>Rev0lt - Leaderboards</title>
+</svelte:head>
+
 <style lang="scss">
     .leaderboard {
         padding: 1em 0 1em 0;
