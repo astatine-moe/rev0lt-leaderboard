@@ -91,7 +91,7 @@
                     </div>
                 {:else}
                     {#if !inactive.length}
-                        <p>No active giveaways</p>
+                        <p>No inactive giveaways</p>
                     {/if}
                     {#each inactive as giveaway}
                         <div class="giveaway">
