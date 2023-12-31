@@ -57,11 +57,13 @@
         </h1>
         <div class="images">
             {#each images as image, i}
-                <img
-                    src={`${PUBLIC_API_URL}${image}`}
-                    alt="evidence {i + 1}"
-                    crossorigin="anonymous"
-                />
+                <div>
+                    <img
+                        src={`${PUBLIC_API_URL}${image}`}
+                        alt="evidence {i + 1}"
+                        crossorigin="anonymous"
+                    />
+                </div>
             {/each}
         </div>
     </div>
@@ -86,7 +88,7 @@
     }
     .images {
         display: flex;
-        img {
+        > div {
             margin-right: 0.5em;
         }
     }
