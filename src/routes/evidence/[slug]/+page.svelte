@@ -55,13 +55,15 @@
                 use:copy={`<@${user.identifier}>`}>@{user.username}</span
             >
         </h1>
-        {#each images as image, i}
-            <img
-                src={`${PUBLIC_API_URL}${image}`}
-                alt="evidence {i + 1}"
-                crossorigin="anonymous"
-            />
-        {/each}
+        <div class="images">
+            {#each images as image, i}
+                <img
+                    src={`${PUBLIC_API_URL}${image}`}
+                    alt="evidence {i + 1}"
+                    crossorigin="anonymous"
+                />
+            {/each}
+        </div>
     </div>
 {/if}
 
@@ -80,6 +82,12 @@
         &:hover {
             background: rgb(88, 101, 242);
             text-decoration: underline;
+        }
+        .images {
+            display: flex;
+            img {
+                margin-right: 0.5em;
+            }
         }
     }
 </style>
