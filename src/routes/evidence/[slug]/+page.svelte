@@ -83,11 +83,11 @@
             background: rgb(88, 101, 242);
             text-decoration: underline;
         }
-        .images {
-            display: flex;
-            img {
-                margin-right: 0.5em;
-            }
+    }
+    .images {
+        display: flex;
+        img {
+            margin-right: 0.5em;
         }
     }
 </style>
