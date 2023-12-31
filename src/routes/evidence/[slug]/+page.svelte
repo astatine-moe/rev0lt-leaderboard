@@ -56,7 +56,11 @@
             >
         </h1>
         {#each images as image, i}
-            <img src={`${PUBLIC_API_URL}${image}`} alt="evidence {i + 1}" />
+            <img
+                src={`${PUBLIC_API_URL}${image}`}
+                alt="evidence {i + 1}"
+                crossorigin="anonymous"
+            />
         {/each}
     </div>
 {/if}
