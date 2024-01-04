@@ -2,40 +2,26 @@
     import { onMount } from "svelte";
     import { PUBLIC_API_URL } from "$env/static/public";
     import paginate from "$lib/client/paginate";
-    import { Toast, Pagination, P } from "flowbite-svelte";
-    import { page } from "$app/stores";
+    import { Toast, Pagination } from "flowbite-svelte";
+    import { page as p } from "$app/stores";
     import { goto } from "$app/navigation";
     import {
         ExclamationCircleOutline,
         StarSolid,
-        ChevronLeftOutline,
-        ChevronRightOutline,
+        ArrowLeftOutline,
+        ArrowRightOutline,
     } from "flowbite-svelte-icons";
     import { copy } from "svelte-copy";
 
     let hidden = true;
-    let perPage = 5;
+    let perPage = 1;
+    let currPage = 1;
 
     let loading = true;
     let err = null;
     let users = [];
     let pages = [];
-
-    $: activeUrl = $page.url.searchParams.get("p") || "1";
-    $: {
-        pages.forEach((page) => {
-            let splitUrl = page.href.split("?");
-            let queryString = splitUrl.slice(1).join("?");
-            const hrefParams = new URLSearchParams(queryString);
-            let hrefValue = hrefParams.get("p");
-            if (hrefValue === activeUrl) {
-                page.active = true;
-            } else {
-                page.active = false;
-            }
-        });
-        pages = pages;
-    }
+    let helper = { start: 1, end: 5, total: 0 };
 
     const get = async () => {
         try {
@@ -49,7 +35,12 @@
             if (res.ok) {
                 users = await res.json();
                 users[0].leader = true;
-                pages = paginate(users, perPage);
+                let paginateResult = paginate(users, perPage, currPage);
+
+                pages = paginateResult.pages;
+                helper = paginateResult.helper;
+
+                setActivePage();
             } else {
                 err = "failed to load";
             }
@@ -57,6 +48,20 @@
             console.error(e);
             err = "failed to load";
         }
+    };
+
+    const setActivePage = () => {
+        let paginateResult = paginate(users, perPage, currPage);
+        pages = paginateResult.pages;
+        helper = paginateResult.helper;
+
+        pages.forEach((page, i) => {
+            if (currPage === i + 1) {
+                page.active = true;
+            } else {
+                page.active = false;
+            }
+        });
     };
 
     onMount(async () => {
@@ -69,21 +74,17 @@
 
     const previous = () => {
         //run on prev
-        const newUrl = new URL($page.url);
-        const currentPage = parseInt(activeUrl || 1) || 1;
-        if (currentPage === 1) return;
-        newUrl?.searchParams?.set("p", (currentPage - 1).toString());
+        if (currPage === 1) return;
+        currPage -= 1;
 
-        goto(newUrl);
+        setActivePage();
     };
     const next = () => {
         //run on next
-        const newUrl = new URL($page.url);
-        const currentPage = parseInt(activeUrl || 1) || 1;
-        if (currentPage <= pages.length + 1) return;
-        newUrl?.searchParams?.set("p", (currentPage + 1).toString());
+        if (currPage >= pages.length) return;
 
-        goto(newUrl);
+        currPage += 1;
+        setActivePage();
     };
 </script>
 
@@ -151,16 +152,42 @@
             {/each}
 
             <div class="text-center">
-                <Pagination {pages} large on:previous={previous} on:next={next}>
-                    <svelte:fragment slot="prev">
-                        <span class="sr-only">Previous</span>
-                        <ChevronLeftOutline class="w-3 h-3" />
-                    </svelte:fragment>
-                    <svelte:fragment slot="next">
-                        <span class="sr-only">Next</span>
-                        <ChevronRightOutline class="w-3 h-3" />
-                    </svelte:fragment>
-                </Pagination>
+                <div class="flex flex-col items-center justify-center gap-2">
+                    <div class="text-sm text-gray-700 dark:text-gray-400">
+                        Showing <span
+                            class="font-semibold text-gray-900 dark:text-white"
+                            >{helper.start}</span
+                        >
+                        to
+                        <span
+                            class="font-semibold text-gray-900 dark:text-white"
+                            >{helper.end}</span
+                        >
+                        of
+                        <span
+                            class="font-semibold text-gray-900 dark:text-white"
+                            >{helper.total}</span
+                        >
+                        Entries
+                    </div>
+
+                    <Pagination table on:previous={previous} on:next={next}>
+                        <div
+                            slot="prev"
+                            class="flex items-center gap-2 text-white bg-gray-800"
+                        >
+                            <ArrowLeftOutline class="w-3.5 h-3.5 me-2" />
+                            Prev
+                        </div>
+                        <div
+                            slot="next"
+                            class="flex items-center gap-2 text-white bg-gray-800"
+                        >
+                            Next
+                            <ArrowRightOutline class="w-3.5 h-3.5 ms-2" />
+                        </div>
+                    </Pagination>
+                </div>
             </div>
         {:else}
             <p class="text-center">No users found</p>

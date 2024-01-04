@@ -1,5 +1,12 @@
-export default (arr, perPage) => {
+export default (arr, perPage, currentPage) => {
     const totalPages = Math.ceil(arr.length / perPage);
+
+    if (currentPage < 1 || currentPage > totalPages) {
+        throw new Error("Invalid currentPage value");
+    }
+
+    const start = (currentPage - 1) * perPage + 1;
+    const end = Math.min(currentPage * perPage, arr.length);
 
     const pages = Array.from({ length: totalPages }, (_, i) => ({
         name: i + 1,
@@ -8,8 +15,8 @@ export default (arr, perPage) => {
     }));
 
     const helper = {
-        start: 1,
-        end: totalPages,
+        start,
+        end,
         total: arr.length,
     };
 
