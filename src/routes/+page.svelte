@@ -14,6 +14,7 @@
     let loading = true;
     let err = null;
     let users = [];
+    let pages = [];
 
     const get = async () => {
         try {
