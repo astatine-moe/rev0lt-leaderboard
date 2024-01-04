@@ -2,7 +2,7 @@
     import { onMount } from "svelte";
     import { PUBLIC_API_URL } from "$env/static/public";
     import paginate from "$lib/client/paginate";
-    import { Toast, Pagination } from "flowbite-svelte";
+    import { Toast, Pagination, Checkbox } from "flowbite-svelte";
     import { page as p } from "$app/stores";
     import { goto } from "$app/navigation";
     import {
@@ -16,6 +16,7 @@
     let hidden = true;
     let perPage = 5;
     let currPage = 1;
+    let showOnlyEntries = true;
 
     let loading = true;
     let err = null;
@@ -35,7 +36,12 @@
             if (res.ok) {
                 users = await res.json();
                 users[0].leader = true;
-                let paginateResult = paginate(users, perPage, currPage);
+                let paginateResult = paginate(
+                    users,
+                    perPage,
+                    currPage,
+                    showOnlyEntries
+                );
 
                 pages = paginateResult.pages;
                 helper = paginateResult.helper;
@@ -51,7 +57,12 @@
     };
 
     const setActivePage = () => {
-        let paginateResult = paginate(users, perPage, currPage);
+        let paginateResult = paginate(
+            users,
+            perPage,
+            currPage,
+            showOnlyEntries
+        );
         pages = paginateResult.pages;
         helper = paginateResult.helper;
 
@@ -152,6 +163,13 @@
             {/each}
 
             <div class="text-center">
+                <Checkbox
+                    bind:checked={showOnlyEntries}
+                    on:change={(e) => {
+                        currPage = 1;
+                        setActivePage();
+                    }}>Show entries only</Checkbox
+                >
                 <div class="flex flex-col items-center justify-center gap-2">
                     <div class="text-sm text-gray-700 dark:text-gray-400">
                         Showing <span

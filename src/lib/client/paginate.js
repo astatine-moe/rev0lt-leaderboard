@@ -1,5 +1,11 @@
-export default (arr, perPage, currentPage) => {
+export default (arr, perPage, currentPage, showOnlyEntries = true) => {
     const totalPages = Math.ceil(arr.length / perPage);
+
+    if (showOnlyEntries) {
+        arr = arr.filter((user) => {
+            return user.total_points !== 0;
+        });
+    }
 
     if (currentPage < 1 || currentPage > totalPages) {
         throw new Error("Invalid currentPage value");
