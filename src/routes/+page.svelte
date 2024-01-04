@@ -14,6 +14,7 @@
     import { copy } from "svelte-copy";
 
     let hidden = true;
+    let perPage = 8;
 
     let loading = true;
     let err = null;
@@ -48,7 +49,7 @@
             if (res.ok) {
                 users = await res.json();
                 users[0].leader = true;
-                pages = paginate(users, 5);
+                pages = paginate(users, perPage);
             } else {
                 err = "failed to load";
             }
@@ -100,7 +101,7 @@
     </div>
     <div class="leaderboard">
         {#if loading}
-            {#each { length: 5 } as col}
+            {#each { length: perPage } as col}
                 <div class="user">
                     <div class="image bg-gray-700 animate-pulse" />
                     <div class="details">
