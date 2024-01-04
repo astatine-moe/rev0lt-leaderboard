@@ -1,11 +1,14 @@
 <script>
     import { onMount } from "svelte";
     import { PUBLIC_API_URL } from "$env/static/public";
-    import { Toast } from "flowbite-svelte";
+    import paginate from "$lib/client/paginate";
+    import { Toast, Pagination } from "flowbite-svelte";
+    import { page } from "$app/stores";
     import {
-        PapperPlaneOutline,
         ExclamationCircleOutline,
         StarSolid,
+        ChevronLeftOutline,
+        ChevronRightOutline,
     } from "flowbite-svelte-icons";
     import { copy } from "svelte-copy";
 
@@ -15,6 +18,22 @@
     let err = null;
     let users = [];
     let pages = [];
+
+    $: activeUrl = $page.url.searchParams.get("p");
+    $: {
+        pages.forEach((page) => {
+            let splitUrl = page.href.split("?");
+            let queryString = splitUrl.slice(1).join("?");
+            const hrefParams = new URLSearchParams(queryString);
+            let hrefValue = hrefParams.get("p");
+            if (hrefValue === activeUrl) {
+                page.active = true;
+            } else {
+                page.active = false;
+            }
+        });
+        pages = pages;
+    }
 
     const get = async () => {
         try {
@@ -27,6 +46,7 @@
 
             if (res.ok) {
                 users = await res.json();
+                pages = paginate(users, 1);
             } else {
                 err = "failed to load";
             }
@@ -43,6 +63,13 @@
 
         loading = false;
     });
+
+    const previous = () => {
+        //run on prev
+    };
+    const next = () => {
+        //run on next
+    };
 </script>
 
 <div class="container">
@@ -103,6 +130,18 @@
                     </div>
                 </div>
             {/each}
+            <div class="text-center">
+                <Pagination {pages} large on:previous={previous} on:next={next}>
+                    <svelte:fragment slot="prev">
+                        <span class="sr-only">Previous</span>
+                        <ChevronLeftOutline class="w-3 h-3" />
+                    </svelte:fragment>
+                    <svelte:fragment slot="next">
+                        <span class="sr-only">Next</span>
+                        <ChevronRightOutline class="w-3 h-3" />
+                    </svelte:fragment>
+                </Pagination>
+            </div>
         {:else}
             <p class="text-center">No users found</p>
         {/if}
