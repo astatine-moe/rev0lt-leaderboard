@@ -14,7 +14,7 @@
     import { copy } from "svelte-copy";
 
     let hidden = true;
-    let perPage = 8;
+    let perPage = 5;
 
     let loading = true;
     let err = null;
