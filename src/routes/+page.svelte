@@ -2,8 +2,9 @@
     import { onMount } from "svelte";
     import { PUBLIC_API_URL } from "$env/static/public";
     import paginate from "$lib/client/paginate";
-    import { Toast, Pagination } from "flowbite-svelte";
+    import { Toast, Pagination, P } from "flowbite-svelte";
     import { page } from "$app/stores";
+    import { goto } from "$app/navigation";
     import {
         ExclamationCircleOutline,
         StarSolid,
@@ -19,7 +20,7 @@
     let users = [];
     let pages = [];
 
-    $: activeUrl = $page.url.searchParams.get("p");
+    $: activeUrl = $page.url.searchParams.get("p") || "1";
     $: {
         pages.forEach((page) => {
             let splitUrl = page.href.split("?");
@@ -46,7 +47,8 @@
 
             if (res.ok) {
                 users = await res.json();
-                pages = paginate(users, 1);
+                users[0].leader = true;
+                pages = paginate(users, 5);
             } else {
                 err = "failed to load";
             }
@@ -66,9 +68,21 @@
 
     const previous = () => {
         //run on prev
+        const newUrl = new URL($page.url);
+        const currentPage = parseInt(activeUrl || 1) || 1;
+        if (currentPage === 1) return;
+        newUrl?.searchParams?.set("p", (currentPage - 1).toString());
+
+        goto(newUrl);
     };
     const next = () => {
         //run on next
+        const newUrl = new URL($page.url);
+        const currentPage = parseInt(activeUrl || 1) || 1;
+        if (currentPage <= pages.length + 1) return;
+        newUrl?.searchParams?.set("p", (currentPage + 1).toString());
+
+        goto(newUrl);
     };
 </script>
 
@@ -99,37 +113,42 @@
             <h3 class="text-lg">Error:</h3>
             <p>{err}</p>
         {:else if users.length}
-            {#each users as user, i}
-                <div class="user">
-                    {#if i === 0}
-                        <StarSolid
-                            class="absolute left-[-10px] top-[-10px] rotate-45 text-yellow-400 w-7 h-7"
-                        />
-                    {/if}
-                    <img
-                        class="image"
-                        src={user.avatar}
-                        alt={`${user.username}'s pfp`}
-                    />
-                    <div class="details">
-                        <h3>
-                            {user.displayName || user.username}
-                            <br />
-                            <span
-                                class="mention"
-                                use:copy={`<@${user.identifier}>`}
-                                >@{user.username}</span
-                            >
-                        </h3>
-                        <span class="text-center"
-                            >{user.total_points} total<br /><span
-                                class="text-gray-400 text-xs"
-                                >({user.points} current)</span
-                            ></span
-                        >
-                    </div>
-                </div>
+            {#each pages as page, i}
+                {#if page.active}
+                    {#each page.items as user, i}
+                        <div class="user">
+                            {#if user.leader}
+                                <StarSolid
+                                    class="absolute left-[-10px] top-[-10px] rotate-45 text-yellow-400 w-7 h-7"
+                                />
+                            {/if}
+                            <img
+                                class="image"
+                                src={user.avatar}
+                                alt={`${user.username}'s pfp`}
+                            />
+                            <div class="details">
+                                <h3>
+                                    {user.displayName || user.username}
+                                    <br />
+                                    <span
+                                        class="mention"
+                                        use:copy={`<@${user.identifier}>`}
+                                        >@{user.username}</span
+                                    >
+                                </h3>
+                                <span class="text-center"
+                                    >{user.total_points} total<br /><span
+                                        class="text-gray-400 text-xs"
+                                        >({user.points} current)</span
+                                    ></span
+                                >
+                            </div>
+                        </div>
+                    {/each}
+                {/if}
             {/each}
+
             <div class="text-center">
                 <Pagination {pages} large on:previous={previous} on:next={next}>
                     <svelte:fragment slot="prev">
