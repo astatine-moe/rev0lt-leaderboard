@@ -186,7 +186,7 @@
                             class="font-semibold text-gray-900 dark:text-white"
                             >{helper.total}</span
                         >
-                        Entries
+                        {showOnlyEntries ? "Entries" : "Users"}
                     </div>
 
                     <Pagination table on:previous={previous} on:next={next}>
