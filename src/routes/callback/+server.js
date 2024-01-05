@@ -41,7 +41,7 @@ export async function GET({ url, cookies, locals }) {
             maxAge: 60 * 60 * 24 * 90, // 90 days
         });
 
-        throw redirect(303, "/");
+        throw redirect(303, "/success");
     } else {
         //get json
         const data = await res.json();
