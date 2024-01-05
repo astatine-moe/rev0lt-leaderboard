@@ -7,7 +7,7 @@
     import { Toast, Pagination, Checkbox } from "flowbite-svelte";
 
     let loading = true;
-    let perPage = 1;
+    let perPage = 5;
     let currPage = 1;
     let showOnlyEntries = true;
 
@@ -17,6 +17,9 @@
     let totalPages = 0;
     let helper = { start: 1, end: perPage, total: 0 };
     let error;
+
+    $: prevDisabled = currPage === 1;
+    $: nextDisabled = currPage >= pages.length;
 
     //logic
     const getUsers = async () => {
@@ -133,14 +136,18 @@
             <Pagination table on:previous={previous} on:next={next}>
                 <div
                     slot="prev"
-                    class="flex items-center gap-2 text-white bg-gray-800"
+                    class="flex items-center gap-2 text-white bg-gray-800 {prevDisabled
+                        ? 'cursor-not-allowed'
+                        : ''}"
                 >
                     <ArrowLeftOutline class="w-3.5 h-3.5 me-2" />
                     Prev
                 </div>
                 <div
                     slot="next"
-                    class="flex items-center gap-2 text-white bg-gray-800"
+                    class="flex items-center gap-2 text-white bg-gray-800 {nextDisabled
+                        ? 'cursor-not-allowed'
+                        : ''}"
                 >
                     Next
                     <ArrowRightOutline class="w-3.5 h-3.5 ms-2" />

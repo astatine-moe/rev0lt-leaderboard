@@ -9,7 +9,7 @@
 </script>
 
 <div
-    class="relative flex items-center bg-slate-50 dark:bg-gray-800 hover:bg-slate-200 hover:dark:bg-gray-700 text-slate-700 dark:text-white border border-slate-200 dark:border-gray-600 rounded mb-3 p-4"
+    class="relative flex items-center bg-slate-50 dark:bg-gray-800 hover:bg-slate-200 hover:dark:bg-gray-700 text-slate-700 dark:text-white border border-slate-200 dark:border-gray-600 rounded mb-3 last:mb-0 p-4"
 >
     {#if type === "leaderboard"}
         {#if !loading && data?.user?.leader}
@@ -76,7 +76,7 @@
                     <h1 class="text-xl text-primary-500">
                         {data?.title}
                     </h1>
-                    <time class="text-xs text-slate-300 dark:text-gray-300"
+                    <time class="text-xs text-slate-400 dark:text-gray-300"
                         >{formatDate(data?.deadline)}</time
                     >
                 </div>
