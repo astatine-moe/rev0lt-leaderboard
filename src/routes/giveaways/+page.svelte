@@ -1,172 +1,98 @@
 <script>
-    import { GiftBoxOutline } from "flowbite-svelte-icons";
-    import { Tabs, TabItem, Spinner } from "flowbite-svelte";
+    import { request } from "$lib/util/requests";
+    import paginate from "$lib/util/paginate";
+    import ListItem from "$lib/client/components/Item/ListItem.svelte";
     import { onMount } from "svelte";
-    import { PUBLIC_API_URL } from "$env/static/public";
-    import { copy } from "svelte-copy";
+    import { ButtonGroup, Button } from "flowbite-svelte";
+    import { browser } from "$app/environment";
+    import {
+        ArrowLeftOutline,
+        ArrowRightOutline,
+        ChevronDownSolid,
+        UserCircleSolid,
+        AdjustmentsVerticalOutline,
+        DownloadSolid,
+    } from "flowbite-svelte-icons";
 
+    let category = "active";
+    if (browser) {
+        category = localStorage.getItem("giveaway_category") || "active";
+    }
     let loading = true;
-    let err = null;
+
+    //data
     let giveaways = [];
     let active = [];
     let inactive = [];
-    let get = async () => {
-        try {
-            const res = await fetch(`${PUBLIC_API_URL}/giveaways`, {
-                method: "GET",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-            });
+    let giveawaysFiltered = {};
 
-            if (res.ok) {
-                giveaways = await res.json();
-            } else {
-                err = "failed to load";
-            }
-        } catch (e) {
-            console.error(e);
-            err = "failed to load";
-        }
+    //logic
+    const getGiveaways = async () => {
+        giveaways = await request("/giveaways", "GET");
+        giveawaysFiltered.active = giveaways.filter(
+            (giveaway) => giveaway.active
+        );
+        giveawaysFiltered.inactive = giveaways.filter(
+            (giveaway) => !giveaway.active
+        );
     };
 
     onMount(async () => {
         loading = true;
-
-        await get();
-
-        active = giveaways.filter((giveaway) => giveaway.active);
-        inactive = giveaways.filter((giveaway) => !giveaway.active);
-
+        await getGiveaways();
         loading = false;
     });
 
-    function formatDate(date) {
-        date = new Date(date);
-        const day = date.getDate();
-        const month = date.toLocaleString("en-GB", { month: "long" });
-        const year = date.getFullYear();
-
-        const suffix =
-            day === 1 ? "st" : day === 2 ? "nd" : day === 3 ? "rd" : "th";
-
-        const hours = date.getHours().toString().padStart(2, "0");
-        const minutes = date.getMinutes().toString().padStart(2, "0");
-        const seconds = date.getSeconds().toString().padStart(2, "0");
-
-        const formattedDate = `${day}${suffix} ${month}, ${year}`;
-        const formattedTime = `${hours}:${minutes}:${seconds}`;
-
-        return `${formattedDate} @ ${formattedTime}`;
-    }
+    const setCategory = (cat) => {
+        category = cat;
+        if (browser) {
+            localStorage.setItem("giveaway_category", cat);
+        }
+    };
 </script>
 
-<svelte:head>
-    <title>Rev0lt - Giveaways</title>
-</svelte:head>
-
-<div class="container">
-    <div class="giveaways">
-        <Tabs contentClass="mt-2">
-            <TabItem open title="Active Giveaways">
-                {#if loading}
-                    <div class="text-center mt-5">
-                        <Spinner />
-                    </div>
-                {:else}
-                    {#if !active.length}
-                        <p>No active giveaways</p>
-                    {/if}
-                    {#each active as giveaway}
-                        <div class="giveaway">
-                            <GiftBoxOutline class="icon w-10 h-10" />
-                            <div>
-                                <h1>{giveaway.title}</h1>
-                                <time>{formatDate(giveaway.deadline)}</time>
-                            </div>
-                        </div>
-                    {/each}
-                {/if}
-            </TabItem>
-            <TabItem title="Past Giveaways">
-                {#if loading}
-                    <div class="text-center mt-5">
-                        <Spinner />
-                    </div>
-                {:else}
-                    {#if !inactive.length}
-                        <p>No inactive giveaways</p>
-                    {/if}
-                    {#each inactive as giveaway}
-                        <div class="giveaway">
-                            <GiftBoxOutline class="icon w-10 h-10" />
-                            <div>
-                                <h1>{giveaway.title}</h1>
-                                <time>{formatDate(giveaway.deadline)}</time>
-                                {#if giveaway.winner}
-                                    <p>
-                                        Winner: <span class="text-yellow-600"
-                                            >{giveaway.winner.displayName ||
-                                                giveaway.winner.username}
-                                            <span
-                                                class="mention"
-                                                use:copy={`<@${giveaway.winner.identifier}>`}
-                                                >@{giveaway.winner
-                                                    .username}</span
-                                            ></span
-                                        >
-                                    </p>
-                                {/if}
-                            </div>
-                        </div>
-                    {/each}
-                {/if}</TabItem
+<div class="pt-3 sm:container">
+    <div class="text-center mb-5">
+        <ButtonGroup>
+            <Button
+                outline
+                color={category === "active" ? "primary" : "dark"}
+                on:click={() => {
+                    setCategory("active");
+                }}
             >
-        </Tabs>
+                <UserCircleSolid class="w-3 h-3 me-2" />
+                Active
+            </Button>
+            <Button
+                outline
+                color={category !== "active" ? "primary" : "dark"}
+                on:click={() => {
+                    setCategory("inactive");
+                }}
+            >
+                <AdjustmentsVerticalOutline class="w-3 h-3 me-2" />
+                Archived
+            </Button>
+        </ButtonGroup>
     </div>
+
+    {#if loading}
+        {#each { length: 5 } as col}
+            <ListItem type="giveaway" loading={true} />
+        {/each}
+    {:else if giveaways.length}
+        {#each giveawaysFiltered[category] as giveaway}
+            <ListItem data={giveaway} type="giveaway" />
+        {:else}
+            <div class="text-center text-slate-500 dark:text-gray-300">
+                <p>
+                    No {category === "active" ? "active" : "archived"} giveaways
+                    found
+                </p>
+            </div>
+        {/each}
+    {:else}
+        <p>{err || "Unknown error"}</p>
+    {/if}
 </div>
-
-<style lang="scss">
-    .giveaways {
-        margin-top: 1em;
-        .giveaway {
-            display: flex;
-            align-items: center;
-            background: rgb(25, 25, 25);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 1em;
-            border-radius: 0.5em;
-            margin-bottom: 0.5em;
-            &:hover {
-                background: rgba(54, 54, 54, 0.7);
-            }
-            > div {
-                margin-left: 1em;
-                h1 {
-                    font-size: 1.5em;
-                }
-                time {
-                    font-size: 0.9em;
-                    color: gray;
-                }
-            }
-        }
-    }
-
-    .mention {
-        border-radius: 3px;
-        padding: 0 2px;
-
-        font-weight: 500;
-        unicode-bidi: plaintext;
-        color: rgb(201, 205, 251);
-        outline: rgb(201, 205, 251);
-        background: rgba(88, 101, 242, 0.3);
-
-        cursor: pointer;
-        &:hover {
-            background: rgb(88, 101, 242);
-            text-decoration: underline;
-        }
-    }
-</style>
