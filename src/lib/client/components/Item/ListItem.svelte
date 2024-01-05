@@ -53,7 +53,11 @@
                             color="red"
                             placement="right"
                             triggeredBy="[id^='disqualify-message']"
-                            >User cannot be selected in the giveaway</Tooltip
+                            >User cannot be selected in the giveaway <span
+                                class="block mt-2"
+                                >Reason: {data?.user?.disqualified_reason ||
+                                    "No reason"}</span
+                            ></Tooltip
                         >
                     {/if}
                 </div>

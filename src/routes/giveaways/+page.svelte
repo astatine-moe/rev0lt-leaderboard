@@ -1,18 +1,10 @@
 <script>
     import { request } from "$lib/util/requests";
-    import paginate from "$lib/util/paginate";
     import ListItem from "$lib/client/components/Item/ListItem.svelte";
     import { onMount } from "svelte";
     import { ButtonGroup, Button } from "flowbite-svelte";
     import { browser } from "$app/environment";
-    import {
-        ArrowLeftOutline,
-        ArrowRightOutline,
-        ChevronDownSolid,
-        UserCircleSolid,
-        AdjustmentsVerticalOutline,
-        DownloadSolid,
-    } from "flowbite-svelte-icons";
+    import { ArchiveOutline, GiftBoxOutline } from "flowbite-svelte-icons";
 
     let category = "active";
     if (browser) {
@@ -22,8 +14,6 @@
 
     //data
     let giveaways = [];
-    let active = [];
-    let inactive = [];
     let giveawaysFiltered = {};
     let error;
 
@@ -67,7 +57,7 @@
                     setCategory("active");
                 }}
             >
-                <UserCircleSolid class="w-3 h-3 me-2" />
+                <GiftBoxOutline class="w-3 h-3 me-2" />
                 Active
             </Button>
             <Button
@@ -77,7 +67,7 @@
                     setCategory("inactive");
                 }}
             >
-                <AdjustmentsVerticalOutline class="w-3 h-3 me-2" />
+                <ArchiveOutline class="w-3 h-3 me-2" />
                 Archived
             </Button>
         </ButtonGroup>
