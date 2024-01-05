@@ -63,7 +63,14 @@
         if (page < 1 || page > totalPages) return;
 
         currPage = page;
-        helper = paginate(users, perPage, currPage, showOnlyEntries).helper;
+        let paginateRequest = paginate(
+            users,
+            perPage,
+            currPage,
+            showOnlyEntries
+        );
+        helper = paginateRequest.helper;
+        pages = paginateRequest.pages;
 
         for (let i = 0; i < pages.length; i++) {
             if (page === i + 1) pages[i].active = true;
@@ -111,8 +118,9 @@
                 {/each}
             {/if}
         {/each}
-        <Checkbox bind:checked={showOnlyEntries} on:change={(e) => switchPage}
-            >Show entries only</Checkbox
+        <Checkbox
+            bind:checked={showOnlyEntries}
+            on:change={(e) => switchPage(1)}>Show entries only</Checkbox
         >
         <div class="flex flex-col items-center justify-center gap-2">
             <div class="text-sm text-gray-700 dark:text-gray-400">
