@@ -87,7 +87,7 @@
         {#each { length: 5 } as col}
             <ListItem type="giveaway" loading={true} />
         {/each}
-    {:else if giveaways.length}
+    {:else if !error}
         {#each giveawaysFiltered[category] as giveaway}
             <ListItem data={giveaway} type="giveaway" />
         {:else}

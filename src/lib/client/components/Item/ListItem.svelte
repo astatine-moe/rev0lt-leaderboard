@@ -1,4 +1,5 @@
 <script>
+    import { Tooltip } from "flowbite-svelte";
     import { StarSolid, GiftBoxOutline } from "flowbite-svelte-icons";
     import { formatDate } from "$lib/util/date";
 
@@ -28,7 +29,7 @@
                 alt={`${data?.user?.username}'s pfp`}
                 class="h-[64px] w-[64px] min-w-[64px] rounded-full mr-4 {data
                     ?.user?.role === 'admin'
-                    ? 'border-primary-600 border'
+                    ? 'border-primary-500 border-2'
                     : ''}"
             />
         {/if}
@@ -41,7 +42,21 @@
                     class="bg-slate-300 dark:bg-gray-600 animate-pulse h-1 w-1/6"
                 />
             {:else}
-                <h3>{data?.user?.displayName || data?.user?.username}</h3>
+                <div>
+                    <h3>{data?.user?.displayName || data?.user?.username}</h3>
+                    {#if data?.user?.disqualified || data?.user?.identifier === "161546204260466688"}
+                        <!-- disqualify myself, don't want people to think I rig anything -->
+                        <p class="text-sm text-red-600" id="disqualify-message">
+                            Disqualified
+                        </p>
+                        <Tooltip
+                            color="red"
+                            placement="right"
+                            triggeredBy="[id^='disqualify-message']"
+                            >User cannot be selected in the giveaway</Tooltip
+                        >
+                    {/if}
+                </div>
 
                 <span class="text-center">
                     <span class="block">{data?.user?.total_points} total</span>
