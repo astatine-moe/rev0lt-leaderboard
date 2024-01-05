@@ -25,16 +25,22 @@
     let active = [];
     let inactive = [];
     let giveawaysFiltered = {};
+    let error;
 
     //logic
     const getGiveaways = async () => {
-        giveaways = await request("/giveaways", "GET");
-        giveawaysFiltered.active = giveaways.filter(
-            (giveaway) => giveaway.active
-        );
-        giveawaysFiltered.inactive = giveaways.filter(
-            (giveaway) => !giveaway.active
-        );
+        try {
+            giveaways = await request("/giveaways", "GET");
+            giveawaysFiltered.active = giveaways.filter(
+                (giveaway) => giveaway.active
+            );
+            giveawaysFiltered.inactive = giveaways.filter(
+                (giveaway) => !giveaway.active
+            );
+        } catch (err) {
+            error = "Failed to fetch giveaways";
+            console.error(err);
+        }
     };
 
     onMount(async () => {
@@ -93,6 +99,6 @@
             </div>
         {/each}
     {:else}
-        <p>{err || "Unknown error"}</p>
+        <p>{error || "Unknown error"}</p>
     {/if}
 </div>

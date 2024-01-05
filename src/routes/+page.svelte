@@ -31,8 +31,6 @@
                 (user) => user.total_points === highestPoints
             );
 
-            console.log(topUsers, highestPoints);
-
             if (topUsers.length > 1) {
                 let tier = 1;
                 topUsers.forEach((user) => {
