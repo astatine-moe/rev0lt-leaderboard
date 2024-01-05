@@ -7,11 +7,12 @@
         Button,
         DarkMode,
     } from "flowbite-svelte";
-
+    import { PUBLIC_API_URL } from "$env/static/public";
     import NavItem from "./NavItem.svelte";
     import { ListOrdoredSolid, GiftBoxOutline } from "flowbite-svelte-icons";
 
     import { page } from "$app/stores";
+    import NavUser from "./NavUser.svelte";
     $: activeUrl = $page.url.pathname;
 
     let navItems = [
@@ -39,11 +40,13 @@
     >
         <div class="flex items-center md:order-2">
             <DarkMode class="mr-4" />
-            <Button
-                size="sm"
-                href="/login?redirect={encodeURIComponent($page.url.pathname)}"
-                >Login with Discord</Button
-            >
+            {#if user}
+                <NavUser {user} />
+            {:else}
+                <Button size="sm" href="{PUBLIC_API_URL}/auth/discord"
+                    >Login with Discord</Button
+                >
+            {/if}
 
             <NavHamburger />
         </div>

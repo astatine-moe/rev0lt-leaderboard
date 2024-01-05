@@ -26,9 +26,11 @@
     onMount(async () => {
         await getCount();
     });
+
+    export let data;
 </script>
 
-<Nav {indicator} />
+<Nav {indicator} user={data?.user} />
 
 <div class="container">
     <slot />
