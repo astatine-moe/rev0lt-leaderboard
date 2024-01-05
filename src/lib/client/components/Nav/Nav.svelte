@@ -42,7 +42,7 @@
             <Button
                 size="sm"
                 href="/login?redirect={encodeURIComponent($page.url.pathname)}"
-                >Login</Button
+                >Login with Discord</Button
             >
 
             <NavHamburger />
