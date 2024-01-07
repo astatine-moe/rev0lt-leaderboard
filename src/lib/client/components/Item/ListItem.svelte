@@ -2,11 +2,13 @@
     import { Tooltip } from "flowbite-svelte";
     import { StarSolid, GiftBoxOutline } from "flowbite-svelte-icons";
     import { formatDate } from "$lib/util/date";
+    import { copy } from "svelte-copy";
 
     export let type = "leaderboard";
     export let loading = false;
 
     export let data;
+    export let user;
 </script>
 
 <div
@@ -43,21 +45,37 @@
                 />
             {:else}
                 <div>
-                    <h3>{data?.user?.displayName || data?.user?.username}</h3>
-                    {#if data?.user?.disqualified || data?.user?.identifier === "161546204260466688"}
-                        <!-- disqualify myself, don't want people to think I rig anything -->
-                        <p class="text-sm text-red-600" id="disqualify-message">
-                            Disqualified
-                        </p>
-                        <Tooltip
-                            color="red"
-                            placement="right"
-                            triggeredBy="[id^='disqualify-message']"
-                            >User cannot be selected in the giveaway <span
-                                class="block mt-2"
-                                >Reason: {data?.user?.disqualified_reason ||
-                                    "No reason"}</span
-                            ></Tooltip
+                    <div>
+                        <span
+                            >{data?.user?.displayName ||
+                                data?.user?.username}</span
+                        >
+                        {#if data?.user?.disqualified || data?.user?.identifier === "161546204260466688"}
+                            <!-- disqualify myself, don't want people to think I rig anything -->
+                            <span>- </span>
+                            <span
+                                class="text-sm text-red-600"
+                                id="disqualify-message"
+                            >
+                                Disqualified
+                            </span>
+                            <Tooltip
+                                color="red"
+                                placement="right"
+                                triggeredBy="[id^='disqualify-message']"
+                                >User cannot be selected in the giveaway <span
+                                    class="block mt-2"
+                                    >Reason: {data?.user?.disqualified_reason ||
+                                        "No reason"}</span
+                                ></Tooltip
+                            >
+                        {/if}
+                    </div>
+                    {#if user && user.role === "admin"}
+                        <span
+                            class="mention"
+                            use:copy={`<@${data?.user.identifier}>`}
+                            >@{data?.user.username}</span
                         >
                     {/if}
                 </div>
@@ -114,3 +132,22 @@
         </div>
     {/if}
 </div>
+
+<style lang="scss">
+    .mention {
+        border-radius: 3px;
+        padding: 0 2px;
+
+        font-weight: 500;
+        unicode-bidi: plaintext;
+        color: rgb(201, 205, 251);
+        outline: rgb(201, 205, 251);
+        background: rgba(88, 101, 242, 0.3);
+
+        cursor: pointer;
+        &:hover {
+            background: rgb(88, 101, 242);
+            text-decoration: underline;
+        }
+    }
+</style>

@@ -99,6 +99,8 @@
         currPage += 1;
         switchPage(currPage);
     };
+
+    export let data;
 </script>
 
 <div class="pt-3 sm:container">
@@ -114,6 +116,7 @@
                         data={{
                             user,
                         }}
+                        user={data?.user}
                     />
                 {/each}
             {/if}
