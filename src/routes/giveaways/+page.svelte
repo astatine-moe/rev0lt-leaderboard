@@ -45,6 +45,7 @@
             localStorage.setItem("giveaway_category", cat);
         }
     };
+    export let data;
 </script>
 
 <div class="pt-3 sm:container">
@@ -79,7 +80,7 @@
         {/each}
     {:else if !error}
         {#each giveawaysFiltered[category] as giveaway}
-            <ListItem data={giveaway} type="giveaway" />
+            <ListItem data={giveaway} type="giveaway" user={data?.user} />
         {:else}
             <div class="text-center text-slate-500 dark:text-gray-300">
                 <p>

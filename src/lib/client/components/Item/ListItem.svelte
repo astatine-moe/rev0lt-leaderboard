@@ -123,10 +123,20 @@
                         class="block {data?.winner
                             ? 'text-primary-900 dark:text-primary-500'
                             : 'text-slate-500 dark:text-gray-300'} text-xs"
-                        >{data?.winner
-                            ? data.winner?.displayName || data.winner?.username
-                            : "TBA"}</span
                     >
+                        {#if user && user.role === "admin" && data?.winner}
+                            <span
+                                class="mention"
+                                use:copy={`<@${data?.winner?.identifier}>`}
+                                >@{data?.winner?.username}</span
+                            >
+                        {:else}
+                            {data?.winner
+                                ? data.winner?.displayName ||
+                                  data.winner?.username
+                                : "TBA"}
+                        {/if}
+                    </span>
                 </div>
             {/if}
         </div>
