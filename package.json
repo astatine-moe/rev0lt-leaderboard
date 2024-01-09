@@ -25,6 +25,7 @@
   "type": "module",
   "dependencies": {
     "@sveltejs/adapter-vercel": "^4.0.3",
-    "flowbite-svelte-icons": "^0.4.5"
+    "flowbite-svelte-icons": "^0.4.5",
+    "sveltekit-superforms": "^1.13.2"
   }
 }
